@@ -1,8 +1,6 @@
 //Game.cpp
 #include "Game.h"
-#include "Brick.h"
 #include "TextureManager.h"
-#include "Brick.h"
 #include <iostream>
 #include <vector>
 
@@ -24,6 +22,8 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, in
 				
 				loadTextures();
 				InitMap();
+				InitBall();
+				InitHolder();
 			}
 			else
 			{
@@ -52,7 +52,11 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, in
 void Game::render()
 {
 	SDL_RenderClear(renderer);
+
 	DrawMap();
+	DrawBall();
+	DrawBallHolder();
+
 	SDL_RenderPresent(renderer);
 }
 
@@ -67,14 +71,27 @@ void Game::handleEvents()
 
 		case SDL_KEYDOWN:
 		{
-		}
+			if (event.key.keysym.sym == SDLK_0)
+			{
+				isMoving = true;
+			}
+		}; break;
 		default: break;
 		}
 	}
 }
 
 void Game::update()
-{}
+{
+	if (isMoving)
+	{
+		MoveBall();
+	}
+	else
+	{
+		MoveBall();
+	}
+}
 
 void Game::clean()
 {
@@ -113,16 +130,33 @@ void Game::DrawMap()
 			if (value == 1)
 			{
 				TextureManager::Instance()->drawTexture("YellowBrick",
-					{ xPos, yPos, brickWidth, brickHeight }, renderer);
+					{xPos, yPos, brickWidth, brickHeight},
+					renderer);
 			}
 			else if (value == 2)
 			{
 				TextureManager::Instance()->drawTexture("GreyBrick",
-					{ xPos, yPos, brickWidth, brickHeight }, renderer);
+					{xPos, yPos, brickWidth, brickHeight},
+					renderer);
 			}
 		}
 	}
 
+}
+
+void Game::DrawBall()
+{
+	TextureManager::Instance()->drawTexture("Ball",
+		{ball.GetBallX(), ball.GetBallY(), ball.GetBallWidth(), ball.GetBallHeight()},
+		renderer);
+}
+
+void Game::DrawBallHolder()
+{
+	TextureManager::Instance()->drawTexture("Desc",
+		{holder.GetBallHolderX(), holder.GetBallHolderY(),
+		holder.GetBallHolderWidth(), holder.GetBallHolderHeight()},
+		renderer);
 }
 
 void Game::loadTextures()
@@ -135,6 +169,14 @@ void Game::loadTextures()
 
 	TextureManager::Instance()->loadTexture("./assets/yellow_Brick.png",
 		"YellowBrick",
+		renderer);
+
+	TextureManager::Instance()->loadTexture("./assets/ball.png",
+		"Ball",
+		renderer);
+
+	TextureManager::Instance()->loadTexture("./assets/desc.png",
+		"Desc",
 		renderer);
 }
 
@@ -169,6 +211,64 @@ void Game::InitMap()
 	{0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 	};
+}
+
+void Game::InitBall()
+{
+	int windowWidth = 0;
+	int windowHeight = 0;
+	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
+	int ballX = (windowWidth / 2) - (ball.GetBallWidth() / 2);
+	int ballY = windowHeight - 70;
+
+	ball.SetPosition(ballX, ballY);
+}
+
+void Game::InitHolder()
+{
+	int windowWidth = 0;
+	int windowHeight = 0;
+	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
+	int ballHolderX = (windowWidth / 2) - (holder.GetBallHolderWidth() / 2);
+	int ballHolderY = windowHeight - 35;
+
+	holder.SetPosition(ballHolderX, ballHolderY);
+}
+
+void Game::MoveBall()
+{
+	int windowWidth = 0;
+	int windowHeight = 0;
+	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
+	std::cout << ball.GetBallY() << std::endl;
+
+	int xpos = ball.GetBallX(); //623
+	int ypos = ball.GetBallY(); //650
+
+
+	if (ball.GetBallY() > (windowHeight - ball.GetBallHeight()) - 70)
+	{
+		isMoving = false;
+	}
+	else if (ball.GetBallY() < 0)
+	{
+		isMoving = true;
+	}
+
+	if (isMoving)
+	{
+		ball.SetPosition(++xpos, ++ypos);
+	}
+
+	else
+	{
+		ball.SetPosition(--xpos, --ypos);
+	}
+	
+
 }
 
 Game::Game()

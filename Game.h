@@ -4,6 +4,8 @@
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
 #include <vector>
+#include "Ball.h"
+#include "BallHolder.h"
 
 class Game
 {
@@ -23,6 +25,8 @@ public:
 	bool isRunning();
 
 	void DrawMap();
+	void DrawBall();
+	void DrawBallHolder();
 private:
 	void loadTextures();
 
@@ -32,5 +36,13 @@ private:
 
 	void InitMap();
 	std::vector<std::vector<int> > mapCord;
-	//int mapCord[20][23]; //my screen 
+
+	void InitBall();
+	Ball ball;
+
+	void InitHolder();
+	BallHolder holder;
+
+	void MoveBall();
+	bool isMoving = true;
 };
