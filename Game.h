@@ -57,9 +57,6 @@ private:
 	bool isHavingCollision = false;
 	bool isBallMoving = false;
 
-	void Collision();
-	bool isHolderCollision = false;
-
 	void SolveWallCollision();
 	
 	std::string backgroundName; 
