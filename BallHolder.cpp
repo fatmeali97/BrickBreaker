@@ -25,3 +25,13 @@ int BallHolder::GetBallHolderY() const
 {
 	return m_ballHolderY;
 }
+
+void BallHolder::SetBallHolderX(int x)
+{
+	m_ballHolderX = x;
+}
+
+int BallHolder::GetSpeed()
+{
+	return m_speed;
+}

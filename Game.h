@@ -4,6 +4,7 @@
 #include <SDL_ttf.h>
 #include <SDL_mixer.h>
 #include <vector>
+#include "Brick.h"
 #include "Ball.h"
 #include "BallHolder.h"
 
@@ -12,28 +13,33 @@ class Game
 public:
 	Game();
 	~Game();
-	bool init(const char* title,
+	bool Init(const char* title,
 		int xpos,
 		int ypos,
 		int width,
 		int height,
 		int flags);
-	void render();
-	void update();
-	void handleEvents();
-	void clean();
-	bool isRunning();
+
+	void Render();
+	void Update();
+	void HandleEvents();
+	void Clean();
+	bool IsRunning();
 
 	void DrawMap();
 	void DrawBall();
 	void DrawBallHolder();
+
+	void LoadAndPlaySound();
+
 private:
-	void loadTextures();
+	void LoadTextures();
 
 	SDL_Window* window = NULL;
 	SDL_Renderer* renderer = NULL;
 	bool running;
-
+	
+	Brick brick;
 	void InitMap();
 	std::vector<std::vector<int> > mapCord;
 
@@ -43,6 +49,18 @@ private:
 	void InitHolder();
 	BallHolder holder;
 
-	void MoveBall();
-	bool isMoving = true;
+	bool isMovingRight = false;
+	bool isMovingLeft = false;
+	bool isMovingDown = false;
+	bool isMovingUp = false;
+
+	bool isHavingCollision = false;
+	bool isBallMoving = false;
+
+	void Collision();
+	bool isHolderCollision = false;
+
+	void SolveWallCollision();
+	
+	std::string backgroundName; 
 };

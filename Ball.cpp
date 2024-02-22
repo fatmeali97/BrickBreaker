@@ -7,6 +7,11 @@ void Ball::SetPosition(int x, int y)
 	m_ballY = y;
 }
 
+int Ball::GetSpeed() const
+{
+	return m_speed;
+}
+
 int Ball::GetBallWidth() const
 {
 	return m_ballWidth;

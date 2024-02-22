@@ -1,7 +1,7 @@
 #include "TextureManager.h"
 #include <iostream>
 
-bool TextureManager::loadTexture(const char* fileName,
+bool TextureManager::LoadTexture(const char* fileName,
 	std::string id,
 	SDL_Renderer* ren)
 {
@@ -19,11 +19,10 @@ bool TextureManager::loadTexture(const char* fileName,
 		textureMap[id] = tex;
 		return true;
 	}
-
-	return false; // something went wrong
+	return false;
 }
 
-void TextureManager::drawTexture(std::string id,
+void TextureManager::DrawTexture(std::string id,
 	SDL_Rect destRect,
 	SDL_Renderer* ren,
 	double angle,

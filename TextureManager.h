@@ -6,11 +6,11 @@
 class TextureManager
 {
 public:
-	bool loadTexture(const char* fileName,
+	bool LoadTexture(const char* fileName,
 		std::string id,
 		SDL_Renderer* ren);
 
-	void drawTexture(std::string id,
+	void DrawTexture(std::string id,
 		SDL_Rect destRect,
 		SDL_Renderer* ren,
 		double angle = 0,

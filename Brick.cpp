@@ -9,12 +9,43 @@ void Brick::SetBrick(std::string brick_name)
 
 void Brick::SetPosition(int x, int y)
 {
-	xPos = x;
-	yPos = y;
+	m_brickX = x;
+	m_brickY = y;
+}
+
+void Brick::SetBrickWidth(int width)
+{
+	this->m_brickWidth = width;
+}
+
+void Brick::SetBrickHeight(int height)
+{
+	this->m_brickHeight = height;
+}
+
+int Brick::GetBrickWidth() const
+{
+	return m_brickWidth;
+}
+
+int Brick::GetBrickHeight() const
+{
+	return m_brickHeight;
+}
+
+int Brick::GetBrickX() const
+{
+	return m_brickX;
+}
+
+int Brick::GetBrickY() const
+{
+	return m_brickY;
 }
 
 void Brick::DrawBrick(SDL_Renderer* ren)
 {
-	TextureManager::Instance()->drawTexture("GreyBrick", {0, 0, 179, 106}, ren);
-	//TextureManager::Instance()->drawTexture("GreyBrick", { xPos, yPos, 182, 106 }, ren);
+	TextureManager::Instance()->DrawTexture(brick_name,
+		{m_brickX, m_brickY,
+		m_brickWidth, m_brickHeight}, ren);
 }
