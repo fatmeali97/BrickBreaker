@@ -7,6 +7,7 @@
 #include "Brick.h"
 #include "Ball.h"
 #include "BallHolder.h"
+#include "Player.h"
 
 class Game
 {
@@ -33,15 +34,17 @@ public:
 	void LoadAndPlaySound();
 
 private:
+
 	void LoadTextures();
 
 	SDL_Window* window = NULL;
 	SDL_Renderer* renderer = NULL;
 	bool running;
 	
-	Brick brick;
+
 	void InitMap();
 	std::vector<std::vector<int> > mapCord;
+	std::vector<Brick> bricks;
 
 	void InitBall();
 	Ball ball;
@@ -49,18 +52,14 @@ private:
 	void InitHolder();
 	BallHolder holder;
 
-	bool isMovingRight = false;
-	bool isMovingLeft = false;
-	bool isMovingDown = false;
-	bool isMovingUp = false;
-
-	bool isHavingCollision = false;
-	bool isBallMoving = false;
-
-	void Collision();
-	bool isHolderCollision = false;
-
 	void SolveWallCollision();
+	void SolveBrickCollision();
+
+	bool isGameOver = false;
 	
-	std::string backgroundName; 
+	void ResetGame();
+	void GameOver();
+
+	Player player;
+	std::string backgroundName;
 };

@@ -18,6 +18,11 @@ void Brick::SetBrickWidth(int width)
 	this->m_brickWidth = width;
 }
 
+void Brick::SetBrickStrength(int strength)
+{
+	this->m_strength = strength;
+}
+
 void Brick::SetBrickHeight(int height)
 {
 	this->m_brickHeight = height;
@@ -33,6 +38,11 @@ int Brick::GetBrickHeight() const
 	return m_brickHeight;
 }
 
+int Brick::GetBrickStrength() const
+{
+	return m_strength;
+}
+
 int Brick::GetBrickX() const
 {
 	return m_brickX;
@@ -46,6 +56,5 @@ int Brick::GetBrickY() const
 void Brick::DrawBrick(SDL_Renderer* ren)
 {
 	TextureManager::Instance()->DrawTexture(brick_name,
-		{m_brickX, m_brickY,
-		m_brickWidth, m_brickHeight}, ren);
+		{m_brickX, m_brickY, m_brickWidth, m_brickHeight}, ren);
 }

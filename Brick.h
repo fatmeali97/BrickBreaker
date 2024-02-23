@@ -9,9 +9,11 @@ public:
 	void SetBrick(std::string brick_name);
 	void SetPosition(int x, int y);
 	void SetBrickWidth(int width);
+	void SetBrickStrength(int strength);
 	void SetBrickHeight(int height);
 	int GetBrickWidth() const;
 	int GetBrickHeight() const;
+	int GetBrickStrength() const;
 	int GetBrickX() const;
 	int GetBrickY() const;
 
@@ -22,7 +24,7 @@ private:
 	int m_brickWidth;
 	int m_brickHeight;
 
-	int strength;
+	int m_strength;
 	int m_brickX;
 	int m_brickY;
 };

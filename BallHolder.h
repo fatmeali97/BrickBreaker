@@ -9,6 +9,7 @@ public:
 	int GetBallHolderY() const;
 	void SetBallHolderX(int x);
 	int GetSpeed();
+
 private:
 	int const m_ballHolderWidth = 250;
 	int const m_ballHolderHeight = 20;

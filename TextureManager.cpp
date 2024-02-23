@@ -7,7 +7,7 @@ bool TextureManager::LoadTexture(const char* fileName,
 {
 	SDL_Surface* tempSurface = IMG_Load(fileName);
 
-	if (tempSurface == 0)
+	if (!tempSurface)
 	{
 		return false;
 	}
