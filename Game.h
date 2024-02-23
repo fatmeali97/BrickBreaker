@@ -52,18 +52,14 @@ private:
 	void InitHolder();
 	BallHolder holder;
 
-	bool isMovingRight = false;
-	bool isMovingLeft = false;
-	bool isMovingDown = false;
-	bool isMovingUp = false;
-
-	bool isHavingCollision = false;
-	bool isBallMoving = false;
-
 	void SolveWallCollision();
 	void SolveBrickCollision();
 
 	bool isGameOver = false;
 	
-	std::string backgroundName; 
+	void ResetGame();
+	void GameOver();
+
+	Player player;
+	std::string backgroundName;
 };
