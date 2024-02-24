@@ -41,7 +41,6 @@ private:
 	void InitMap();
 	void InitBall();
 	void InitHolder();
-<<<<<<< HEAD
 	void SolveWallCollision();
 	void SolveBrickCollision();
 	void ResetGame();
@@ -54,18 +53,3 @@ private:
 	Player player;
 	std::string backgroundName;
 };
-=======
-	BallHolder holder;
-
-	void SolveWallCollision();
-	void SolveBrickCollision();
-
-	bool isGameOver = false;
-	
-	void ResetGame();
-	void GameOver();
-
-	Player player;
-	std::string backgroundName;
-};
->>>>>>> 8ea7041290f1a69f725c723e9679ed1b33e0d5bd
