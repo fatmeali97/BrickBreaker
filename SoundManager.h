@@ -7,6 +7,12 @@
 class SoundManager
 {
 public:
+	bool LoadMusicAndSound(const char* fileName, std::string id, int type);
+
+	void PlaySound(std::string id, int loop, int ms = 0);
+	void PlayMusic(std::string id, int loop, int ms = 0); 
+	void ChangeVolume(std::string id);
+
 	static SoundManager* Instance()
 	{
 		if (s_mInstance == 0)
@@ -16,18 +22,6 @@ public:
 		}
 		return s_mInstance;
 	}
-
-	bool LoadMusicAndSound(const char* fileName,
-		std::string id,
-		int type);
-
-	void PlaySound(std::string id,
-		int loop,
-		int ms = 0);
-
-	void PlayMusic(std::string id,
-		int loop, int ms = 0); 
-
 private:
 	static SoundManager* s_mInstance;
 	std::map<std::string, Mix_Chunk*> s_mSound; 

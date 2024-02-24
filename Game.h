@@ -30,40 +30,26 @@ public:
 	void DrawMap();
 	void DrawBall();
 	void DrawBallHolder();
-
 	void LoadAndPlaySound();
 
 private:
-
-	void LoadTextures();
-
 	SDL_Window* window = NULL;
 	SDL_Renderer* renderer = NULL;
 	bool running;
-	
+	void LoadTextures();
 
 	void InitMap();
-	std::vector<std::vector<int> > mapCord;
-	std::vector<Brick> bricks;
-
 	void InitBall();
-	Ball ball;
-
 	void InitHolder();
-	BallHolder holder;
-
-	bool isMovingRight = false;
-	bool isMovingLeft = false;
-	bool isMovingDown = false;
-	bool isMovingUp = false;
-
-	bool isHavingCollision = false;
-	bool isBallMoving = false;
-
 	void SolveWallCollision();
 	void SolveBrickCollision();
-
-	bool isGameOver = false;
-	
-	std::string backgroundName; 
+	void ResetGame();
+	void GameOver();
+	void Win();
+	std::vector<std::vector<int> > mapCord;
+	std::vector<Brick> bricks;
+	Ball ball;
+	BallHolder holder;
+	Player player;
+	std::string backgroundName;
 };

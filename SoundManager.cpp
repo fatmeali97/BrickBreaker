@@ -57,6 +57,11 @@ void SoundManager::PlayMusic(std::string id,
     }
 }
 
+void SoundManager::ChangeVolume(std::string id)
+{
+    Mix_VolumeMusic(15);
+}
+
 void SoundManager::PlaySound(std::string id,
     int loop, int ms)
 {

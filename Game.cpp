@@ -24,13 +24,10 @@ bool Game::Init(const char* title, int xpos, int ypos, int width, int height, in
 				time_t t;
 				srand((unsigned)time(&t));
 
-				
 				LoadTextures();
 				InitMap();
 				InitBall();
 				InitHolder();
-				//InitPoints();
-				//InitLives();
 				player.InitPoints(renderer);
 			}
 			else
@@ -68,6 +65,7 @@ void Game::Render()
 	player.DrawLives(renderer);
 	player.GameOver(renderer);
 	player.StartGame(renderer);
+	player.WinGame(renderer);
 
 	SDL_RenderPresent(renderer);
 }
@@ -92,7 +90,6 @@ void Game::HandleEvents()
 		{
 			holder.SetBallHolderX(0);
 		}
-
 		newXpos = holder.GetBallHolderX();
 		ballMoveWidth = newXpos - xpos; // to keep ball with holder
 	}
@@ -129,26 +126,38 @@ void Game::HandleEvents()
 		{
 			if (event.key.keysym.sym == SDLK_SPACE)
 			{
-				if (player.GetIsGameStart() == true)
+				if (player.GetIsGameAtStartingPosition() == true) // we have starting image;
 				{
-					player.SetIsGameStart(false);
+					SoundManager::Instance()->PlayMusic("backgroudMusic", -1);
+					SoundManager::Instance()->ChangeVolume("backgroundMusic");
+					SoundManager::Instance()->PlaySound("start", 0, 0);
+					player.SetIsGameAtStartingPosition(false); // starting game part, images is no more on screen;
+					SDL_Delay(700);
 					return;
 				}
 
-				if (isGameOver)
+				else if (player.GetIsGameOver() == true) // if the game is ended, restart
 				{
 					player.ResetPlayerData();
-					isGameOver = false;
+					player.SetIsGameOver(false);
+					player.SetIsGameAtStartingPosition(true);
 				}
-				
-				else 
+
+				else if (player.GetIsGameWin() == true) // if the player win the game, restart data
 				{
-				//player.SetIsGameStart(true);
-				ball.SetIsBallMovingUp(true);
-				ball.SetIsBallMovingRight(true);
-				ball.SetIsBallMoving(true);
+					ball.SetIsBallMoving(false);
+					player.SetIsGameWin(false);
+					player.SetIsGameAtStartingPosition(true);
 				}
-				
+
+				else if (ball.GetIsBallMoving() == false) // to start game 
+				{
+			
+					ball.SetIsBallMovingUp(true);
+					ball.SetIsBallMovingRight(true);
+					ball.SetIsBallMoving(true);
+					return;
+				}
 			}
 
 			if (event.key.keysym.sym == SDLK_KP_ENTER)
@@ -211,21 +220,19 @@ bool Game::IsRunning()
 
 void Game::DrawMap()
 {
+	TextureManager::Instance()->DrawTexture(backgroundName,
+		{ 0, 0, 1280, 720 }, renderer);
 
 	for (int i = 0; i < bricks.size(); ++i)
 	{
 		if (bricks.at(i).GetBrickStrength()  == 1)
 		{
-			/*bricks.at(i).SetBrick("YellowBrick");
-			bricks.at(i).DrawBrick(renderer);*/
 			TextureManager::Instance()->DrawTexture("YellowBrick",
 				{ bricks.at(i).GetBrickX(), bricks.at(i).GetBrickY(),
 				bricks.at(i).GetBrickWidth(), bricks.at(i).GetBrickHeight() }, renderer);
 		}
 		else if (bricks.at(i).GetBrickStrength() == 2)
 		{
-		/*	bricks.at(i).SetBrick("GreyBrick");
-			bricks.at(i).DrawBrick(renderer);*/
 			TextureManager::Instance()->DrawTexture("GreyBrick",
 				{ bricks.at(i).GetBrickX(), bricks.at(i).GetBrickY(),
 				bricks.at(i).GetBrickWidth(), bricks.at(i).GetBrickHeight() }, renderer);
@@ -259,14 +266,12 @@ void Game::LoadAndPlaySound()
 		"ballHitDesc", 0);
 	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/start.wav",
 		"start", 0);
-	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/hitBrick.wav",
+	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/hit.wav",
 		"hitBrick", 0);
-
-	//SoundManager::Instance()->PlayMusic("backgroudMusic", -1);
-
-	//SoundManager::Instance()->PlaySound("start", 0, 0);
-	//SoundManager::Instance()->PlaySound("hitBrick", 0, 0);
-	//SoundManager::Instance()->PlaySound("gameOver", 0, 0);
+	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/win.wav",
+		"win", 0);
+	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/push.wav",
+		"pushBall", 0);
 }
 
 void Game::LoadTextures()
@@ -293,13 +298,32 @@ void Game::LoadTextures()
 		"lives",
 		renderer);
 
-	TextureManager::Instance()->LoadTexture("./assets/gameOver.jpg",
+	TextureManager::Instance()->LoadTexture("./assets/gameOver.png",
 		"gameOver",
 		renderer);
 
-	TextureManager::Instance()->LoadTexture("./assets/start.jpg",
+	TextureManager::Instance()->LoadTexture("./assets/start.png",
 		"Start",
 		renderer);
+
+	TextureManager::Instance()->LoadTexture("./assets/winner.png",
+		"winner",
+		renderer);
+
+	TextureManager::Instance()->LoadTexture("./assets/bg/3.png",
+		"background1",
+		renderer);
+
+	TextureManager::Instance()->LoadTexture("./assets/bg/3.png",
+		"background2",
+		renderer);
+
+	TextureManager::Instance()->LoadTexture("./assets/bg/3.png",
+		"background3",
+		renderer);
+
+	int id = rand() % 3;
+	backgroundName = "background" + std::to_string(id + 1);
 }
 
 void Game::InitMap()
@@ -341,6 +365,7 @@ void Game::InitMap()
 	int brickHeight = windowHeight / mapRowCount;
 
 	bricks.clear();
+
 	for (int i = 0; i < mapCord.size(); ++i) //colums
 	{
 		for (int j = 0; j < mapCord[i].size(); ++j) // rows
@@ -421,7 +446,7 @@ void Game::SolveWallCollision()
 		}
 		else
 		{
-			player.DecreaseLives();
+			player.DecreaseLives(1);
 			if (player.GetLives() > 0) // have lives
 			{
 				ResetGame();
@@ -429,20 +454,13 @@ void Game::SolveWallCollision()
 			else
 			{
 				GameOver();
-			
 			}
 		}
 	}
 }
 
-
-
 void Game::ResetGame()
 {
-	//ball.SetIsBallMovingDown(false);
-	//ball.SetIsBallMovingUp(false);
-	//ball.SetIsBallMovingLeft(false);
-	//ball.SetIsBallMovingRight(false);
 	ball.SetIsBallMoving(false);
 
 	InitBall();
@@ -451,20 +469,25 @@ void Game::ResetGame()
 
 void Game::GameOver()
 {
-	ball.SetIsBallMovingDown(false);
-	ball.SetIsBallMovingUp(false);
-	ball.SetIsBallMovingLeft(false);
-	ball.SetIsBallMovingRight(false);
 	ball.SetIsBallMoving(false);
-
+	player.SetIsGameOver(true);
 	InitMap();
 	InitBall();
 	InitHolder();
-	//player.SetPoints(0);
-
-	isGameOver = true;
 
 	SoundManager::Instance()->PlaySound("gameOver", 0, 0);
+}
+
+void Game::Win()
+{
+	ball.SetIsBallMoving(false);
+	player.SetIsGameWin(true);
+	InitMap();
+	InitBall();
+	InitHolder();
+	player.ResetPlayerData();
+	
+	SoundManager::Instance()->PlaySound("win", 0, 0);
 }
 
 
@@ -511,17 +534,19 @@ void Game::SolveBrickCollision()
 			}
 
 			//collision happen;
-			int value = bricks.at(i).GetBrickStrength();
-			int newValue = value - 1;
-			bricks.at(i).SetBrickStrength(newValue);
+			bricks.at(i).DecreaseStrength(1);
 
-			if (newValue == 0)
+			if (bricks.at(i).GetBrickStrength() == 0)
 			{
 				SDL_DestroyTexture(NULL);
 			}
 
 			player.IncreasePoints(1);
 
+			if (player.GetPoints() == 120)
+			{
+				Win();
+			}
 			SoundManager::Instance()->PlaySound("hitBrick", 0, 0);
 			
 			if (ball.GetIsBallMovingUp())

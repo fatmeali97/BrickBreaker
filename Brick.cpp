@@ -28,6 +28,11 @@ void Brick::SetBrickHeight(int height)
 	this->m_brickHeight = height;
 }
 
+void Brick::DecreaseStrength(int strength)
+{
+	m_strength = m_strength - strength;
+}
+
 int Brick::GetBrickWidth() const
 {
 	return m_brickWidth;

@@ -5,9 +5,7 @@ Game* game = NULL;
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 
-
 const int FramePerSecond = 60; 
-
 void limitFPS(unsigned int elapseTimeFromProgramStartBeforeGameUpdate)
 {
 	double elapseTimeFromProgramStartAfterUpdate = SDL_GetTicks(); 

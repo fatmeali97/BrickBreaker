@@ -1,5 +1,5 @@
 #pragma once
-
+#include <SDL.h>
 class Ball
 {
 public:
