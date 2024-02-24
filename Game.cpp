@@ -121,7 +121,6 @@ void Game::HandleEvents()
 		switch (event.type)
 		{
 		case SDL_QUIT: running = false; break;
-
 		case SDL_KEYDOWN:
 		{
 			if (event.key.keysym.sym == SDLK_SPACE)
@@ -152,19 +151,12 @@ void Game::HandleEvents()
 
 				else if (ball.GetIsBallMoving() == false) // to start game 
 				{
-			
 					ball.SetIsBallMovingUp(true);
 					ball.SetIsBallMovingRight(true);
 					ball.SetIsBallMoving(true);
 					return;
 				}
 			}
-
-			if (event.key.keysym.sym == SDLK_KP_ENTER)
-			{
-			
-			}
-
 		}; break;
 		
 		default: break;
@@ -200,7 +192,6 @@ void Game::Update()
 		}
 		ball.SetPosition(newXpos, newYpos);
 	}
-
 	SolveWallCollision();
 	SolveBrickCollision();
 }
@@ -532,7 +523,6 @@ void Game::SolveBrickCollision()
 			{
 				continue;
 			}
-
 			//collision happen;
 			bricks.at(i).DecreaseStrength(1);
 
@@ -540,7 +530,7 @@ void Game::SolveBrickCollision()
 			{
 				SDL_DestroyTexture(NULL);
 			}
-
+			
 			player.IncreasePoints(1);
 
 			if (player.GetPoints() == 120)

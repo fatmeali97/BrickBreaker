@@ -42,6 +42,5 @@ private:
 	TTF_Font* font1;
 	SDL_Texture* pointsTextTexture,	* textTexture, *gameOverText;
 	SDL_Rect dRectText,dRectText2, dRectText3;
-
 };
 
