@@ -420,7 +420,6 @@ void Game::SolveWallCollision()
 void Game::ResetGame()
 {
 	m_ball.SetIsBallMoving(false);
-
 	InitBall();
 	InitHolder();
 }

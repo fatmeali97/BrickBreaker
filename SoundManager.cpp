@@ -19,7 +19,6 @@ bool SoundManager::LoadMusicAndSound(const char* fileName,
 {
     //type 1 => music; 
     //type 0 => sound;
-
     if (type == 1)
     {
         Mix_Music* music = Mix_LoadMUS(fileName);

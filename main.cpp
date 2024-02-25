@@ -22,7 +22,6 @@ void limitFPS(unsigned int elapseTimeFromProgramStartBeforeGameUpdate)
 int main(int argc, char* argv[])
 {
 	game = new Game();
-
 	game->Init("My new window",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
@@ -30,7 +29,6 @@ int main(int argc, char* argv[])
 		SDL_WINDOW_SHOWN);
 
 	game->LoadAndPlaySound();
-	
 	while (game->IsRunning())
 	{
 		unsigned int elapseTimeFromProgramStartBeforeGameUpdate = SDL_GetTicks(); 
@@ -43,7 +41,5 @@ int main(int argc, char* argv[])
 	}
 
 	game->Clean();
-	
 	return 0;
-
 };
