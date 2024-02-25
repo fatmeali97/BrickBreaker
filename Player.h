@@ -35,12 +35,14 @@ private:
 	int m_livesXpos = 1000;
 	int m_livesYpos = 15;
 
-	bool isGameAtStartingPosition = true;
-	bool isGameOver = false;
-	bool isGameWin = false;
+	bool m_isGameAtStartingPosition = true;
+	bool m_isGameOver = false;
+	bool m_isGameWin = false;
 
-	TTF_Font* font1;
-	SDL_Texture* pointsTextTexture,	* textTexture, *gameOverText;
-	SDL_Rect dRectText,dRectText2, dRectText3;
+	TTF_Font* m_font;
+	SDL_Texture* m_pointsTextTexture;
+	SDL_Texture* m_textTexture;
+	SDL_Rect m_textDestRect;
+	SDL_Rect m_pointsDestRect;
 };
 

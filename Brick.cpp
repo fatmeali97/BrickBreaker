@@ -2,11 +2,6 @@
 #include "TextureManager.h"
 #include <iostream>
 
-void Brick::SetBrick(std::string brick_name)
-{
-	this->brick_name = brick_name;
-}
-
 void Brick::SetPosition(int x, int y)
 {
 	m_brickX = x;
@@ -60,6 +55,16 @@ int Brick::GetBrickY() const
 
 void Brick::DrawBrick(SDL_Renderer* ren)
 {
-	TextureManager::Instance()->DrawTexture(brick_name,
-		{m_brickX, m_brickY, m_brickWidth, m_brickHeight}, ren);
+	if (GetBrickStrength() == 1)
+	{
+		TextureManager::Instance()->DrawTexture("YellowBrick",
+			{ GetBrickX(), GetBrickY(),
+			GetBrickWidth(), GetBrickHeight() }, ren);
+	}
+	else if (GetBrickStrength() == 2)
+	{
+		TextureManager::Instance()->DrawTexture("GreyBrick",
+			{GetBrickX(), GetBrickY(),
+			GetBrickWidth(), GetBrickHeight() }, ren);
+	}
 }

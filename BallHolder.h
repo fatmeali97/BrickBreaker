@@ -1,4 +1,5 @@
 #pragma once
+#include <SDL.h>
 class BallHolder
 {
 public:
@@ -10,6 +11,8 @@ public:
 	int GetBallHolderY() const;
 	int GetSpeed();
 
+	void Draw(SDL_Renderer* ren);
+
 private:
 	int const m_ballHolderWidth = 250;
 	int const m_ballHolderHeight = 20;
@@ -17,4 +20,5 @@ private:
 	int m_ballHolderY;
 	int m_speed = 10;
 };
+
 

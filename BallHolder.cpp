@@ -1,4 +1,5 @@
 #include "BallHolder.h"
+#include "TextureManager.h"
 
 void BallHolder::SetPosition(int x, int y)
 {
@@ -34,4 +35,12 @@ void BallHolder::SetBallHolderX(int x)
 int BallHolder::GetSpeed()
 {
 	return m_speed;
+}
+
+void BallHolder::Draw(SDL_Renderer* ren)
+{
+	TextureManager::Instance()->DrawTexture("Desc",
+		{ GetBallHolderX(), GetBallHolderY(),
+		GetBallHolderWidth(), GetBallHolderHeight() },
+		ren);
 }

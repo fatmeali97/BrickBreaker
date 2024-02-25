@@ -34,52 +34,59 @@ int Ball::GetBallY() const
 
 void Ball::SetIsBallMovingRight(bool isBallMovingRight)
 {
-	this->isBallMovingRight = isBallMovingRight;
+	this->m_isBallMovingRight = isBallMovingRight;
 }
 
 void Ball::SetIsBallMovingLeft(bool isBallMovingLeft)
 {
-	this->isBallMovingLeft = isBallMovingLeft;
+	this->m_isBallMovingLeft = isBallMovingLeft;
 }
 
 void Ball::SetIsBallMovingDown(bool isBallMovingDown)
 {
-	this->isBallMovingDown = isBallMovingDown;
+	this->m_isBallMovingDown = isBallMovingDown;
 }
 
 void Ball::SetIsBallMovingUp(bool isBallMovingUp)
 {
-	this->isBallMovingUp = isBallMovingUp;
+	this->m_isBallMovingUp = isBallMovingUp;
 }
 
 void Ball::SetIsBallMoving(bool isBallMoving)
 {
-	this->isBallMoving = isBallMoving;
+	this->m_isBallMoving = isBallMoving;
 }
 
 bool Ball::GetIsBallMovingRight()
 {
-	return isBallMovingRight;
+	return m_isBallMovingRight;
 }
 
 bool Ball::GetIsBallMovingLeft()
 {
-	return isBallMovingLeft;
+	return m_isBallMovingLeft;
 }
 
 bool Ball::GetIsBallMovingDown()
 {
-	return isBallMovingDown;
+	return m_isBallMovingDown;
 }
 
 bool Ball::GetIsBallMovingUp()
 {
-	return isBallMovingUp;
+	return m_isBallMovingUp;
 }
 
 bool Ball::GetIsBallMoving()
 {
-	return isBallMoving;
+	return m_isBallMoving;
+}
+
+void Ball::Draw(SDL_Renderer* ren)
+{
+	TextureManager::Instance()->DrawTexture("Ball",
+		{ GetBallX(), GetBallY(), GetBallWidth(), GetBallHeight() },
+		ren);
 }
 
 

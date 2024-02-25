@@ -5,7 +5,6 @@
 class Brick
 {
 public:
-	void SetBrick(std::string brick_name);
 	void SetPosition(int x, int y);
 	void SetBrickWidth(int width);
 	void SetBrickStrength(int strength);
@@ -20,7 +19,6 @@ public:
 	int GetBrickY() const;
 
 private:
-	std::string brick_name;
 	int m_brickWidth;
 	int m_brickHeight;
 	int m_strength;

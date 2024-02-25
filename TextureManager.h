@@ -25,7 +25,6 @@ public:
 		}
 		return instance;
 	}
-
 private:
 	TextureManager() {}
 	std::map<std::string, SDL_Texture*> textureMap;

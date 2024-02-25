@@ -11,15 +11,15 @@ bool Game::Init(const char* title, int xpos, int ypos, int width, int height, in
 	{
 		std::cout << "SDL init success\n";
 
-		window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
-		if (window != 0) //window init success
+		m_window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
+		if (m_window != 0) //window init success
 		{
 			std::cout << "window creation success\n";
-			renderer = SDL_CreateRenderer(window, -1, 0);
-			if (renderer != 0) //renderer init success
+			m_renderer = SDL_CreateRenderer(m_window, -1, 0);
+			if (m_renderer != 0) //renderer init success
 			{
 				std::cout << "renderer creation success\n";
-				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+				SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
 
 				time_t t;
 				srand((unsigned)time(&t));
@@ -28,7 +28,7 @@ bool Game::Init(const char* title, int xpos, int ypos, int width, int height, in
 				InitMap();
 				InitBall();
 				InitHolder();
-				player.InitPoints(renderer);
+				m_player.InitPoints(m_renderer);
 			}
 			else
 			{
@@ -48,7 +48,7 @@ bool Game::Init(const char* title, int xpos, int ypos, int width, int height, in
 		return false;
 	}
 	std::cout << "init success\n";
-	running = true;
+	m_running = true;
 	return true;
 }
 
@@ -56,18 +56,18 @@ bool Game::Init(const char* title, int xpos, int ypos, int width, int height, in
 
 void Game::Render()
 {
-	SDL_RenderClear(renderer);
+	SDL_RenderClear(m_renderer);
 
 	DrawMap();
-	DrawBall();
-	DrawBallHolder();
-	player.RenderScore(renderer);
-	player.DrawLives(renderer);
-	player.GameOver(renderer);
-	player.StartGame(renderer);
-	player.WinGame(renderer);
+	m_ball.Draw(m_renderer);
+	m_holder.Draw(m_renderer);
+	m_player.RenderScore(m_renderer);
+	m_player.DrawLives(m_renderer);
+	m_player.GameOver(m_renderer);
+	m_player.StartGame(m_renderer);
+	m_player.WinGame(m_renderer);
 
-	SDL_RenderPresent(renderer);
+	SDL_RenderPresent(m_renderer);
 }
 
 void Game::HandleEvents()
@@ -76,43 +76,43 @@ void Game::HandleEvents()
 
 	int windowWidth = 0;
 	int windowHeight = 0;
-	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+	SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
 
 	//continuous-response keys
 	int ballMoveWidth = 0; 
 	if (keystate[SDL_SCANCODE_LEFT])
 	{
-		int xpos = holder.GetBallHolderX();
-		int newXpos = xpos - holder.GetSpeed();
-		holder.SetBallHolderX(newXpos);
+		int xpos = m_holder.GetBallHolderX();
+		int newXpos = xpos - m_holder.GetSpeed();
+		m_holder.SetBallHolderX(newXpos);
 
-		if (holder.GetBallHolderX() < 0)
+		if (m_holder.GetBallHolderX() < 0)
 		{
-			holder.SetBallHolderX(0);
+			m_holder.SetBallHolderX(0);
 		}
-		newXpos = holder.GetBallHolderX();
+		newXpos = m_holder.GetBallHolderX();
 		ballMoveWidth = newXpos - xpos; // to keep ball with holder
 	}
 	else if (keystate[SDL_SCANCODE_RIGHT])
 	{
-		int xpos = holder.GetBallHolderX();
-		int newXpos = xpos + holder.GetSpeed();
-		holder.SetBallHolderX(newXpos);
+		int xpos = m_holder.GetBallHolderX();
+		int newXpos = xpos + m_holder.GetSpeed();
+		m_holder.SetBallHolderX(newXpos);
 
-		int mostRightPos = windowWidth - holder.GetBallHolderWidth();
-		if (holder.GetBallHolderX() > mostRightPos)
+		int mostRightPos = windowWidth - m_holder.GetBallHolderWidth();
+		if (m_holder.GetBallHolderX() > mostRightPos)
 		{
-			holder.SetBallHolderX(mostRightPos);
+			m_holder.SetBallHolderX(mostRightPos);
 		}
 
-		newXpos = holder.GetBallHolderX();
+		newXpos = m_holder.GetBallHolderX();
 		ballMoveWidth = newXpos - xpos;
 	}
 
-	if (!ball.GetIsBallMoving())
+	if (!m_ball.GetIsBallMoving())
 	{
-		int xpos = ball.GetBallX();
-		ball.SetPosition(xpos + ballMoveWidth, ball.GetBallY());
+		int xpos = m_ball.GetBallX();
+		m_ball.SetPosition(xpos + ballMoveWidth, m_ball.GetBallY());
 	}
 
 	SDL_Event event;
@@ -120,43 +120,46 @@ void Game::HandleEvents()
 	{
 		switch (event.type)
 		{
-		case SDL_QUIT: running = false; break;
+		case SDL_QUIT: m_running = false; break;
+
 		case SDL_KEYDOWN:
 		{
 			if (event.key.keysym.sym == SDLK_SPACE)
 			{
-				if (player.GetIsGameAtStartingPosition() == true) // we have starting image;
+				if (m_player.GetIsGameAtStartingPosition() == true) // we have starting image;
 				{
 					SoundManager::Instance()->PlayMusic("backgroudMusic", -1);
 					SoundManager::Instance()->ChangeVolume("backgroundMusic");
 					SoundManager::Instance()->PlaySound("start", 0, 0);
-					player.SetIsGameAtStartingPosition(false); // starting game part, images is no more on screen;
+					m_player.SetIsGameAtStartingPosition(false); // starting game part, images is no more on screen;
 					SDL_Delay(700);
 					return;
 				}
 
-				else if (player.GetIsGameOver() == true) // if the game is ended, restart
+				else if (m_player.GetIsGameOver() == true) // if the game is ended, restart
 				{
-					player.ResetPlayerData();
-					player.SetIsGameOver(false);
-					player.SetIsGameAtStartingPosition(true);
+					m_player.ResetPlayerData();
+					m_player.SetIsGameOver(false);
+					m_player.SetIsGameAtStartingPosition(true);
 				}
 
-				else if (player.GetIsGameWin() == true) // if the player win the game, restart data
+				else if (m_player.GetIsGameWin() == true) // if the player win the game, restart data
 				{
-					ball.SetIsBallMoving(false);
-					player.SetIsGameWin(false);
-					player.SetIsGameAtStartingPosition(true);
+					m_ball.SetIsBallMoving(false);
+					m_player.SetIsGameWin(false);
+					m_player.SetIsGameAtStartingPosition(true);
 				}
 
-				else if (ball.GetIsBallMoving() == false) // to start game 
+				else if (m_ball.GetIsBallMoving() == false) // to start game 
 				{
-					ball.SetIsBallMovingUp(true);
-					ball.SetIsBallMovingRight(true);
-					ball.SetIsBallMoving(true);
+			
+					m_ball.SetIsBallMovingUp(true);
+					m_ball.SetIsBallMovingRight(true);
+					m_ball.SetIsBallMoving(true);
 					return;
 				}
 			}
+
 		}; break;
 		
 		default: break;
@@ -166,31 +169,31 @@ void Game::HandleEvents()
 
 void Game::Update()
 {
-	int xpos = ball.GetBallX();
-	int ypos = ball.GetBallY();
-	int speed = ball.GetSpeed();
+	int xpos = m_ball.GetBallX();
+	int ypos = m_ball.GetBallY();
+	int speed = m_ball.GetSpeed();
 
- 	if (ball.GetIsBallMoving())
+ 	if (m_ball.GetIsBallMoving())
 	{
 		int newXpos = xpos;
 		int newYpos = ypos;
-		if (ball.GetIsBallMovingRight())
+		if (m_ball.GetIsBallMovingRight())
 		{
 			newXpos = xpos + speed;
 		}
-		if (ball.GetIsBallMovingLeft())
+		if (m_ball.GetIsBallMovingLeft())
 		{
 			newXpos = xpos - speed;
 		}
-		if (ball.GetIsBallMovingDown())
+		if (m_ball.GetIsBallMovingDown())
 		{
 			newYpos = ypos + speed;
 		}
-		if (ball.GetIsBallMovingUp())
+		if (m_ball.GetIsBallMovingUp())
 		{
 			newYpos = ypos - speed;
 		}
-		ball.SetPosition(newXpos, newYpos);
+		m_ball.SetPosition(newXpos, newYpos);
 	}
 	SolveWallCollision();
 	SolveBrickCollision();
@@ -199,53 +202,25 @@ void Game::Update()
 void Game::Clean()
 {
 	std::cout << "cleaning game\n";
-	SDL_DestroyWindow(window);
-	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(m_window);
+	SDL_DestroyRenderer(m_renderer);
 	SDL_Quit();
 }
 
 bool Game::IsRunning()
 {
-	return Game::running;
+	return Game::m_running;
 }
 
 void Game::DrawMap()
 {
-	TextureManager::Instance()->DrawTexture(backgroundName,
-		{ 0, 0, 1280, 720 }, renderer);
+	TextureManager::Instance()->DrawTexture("background",{ 0, 0, 1280, 720 }, m_renderer);
 
-	for (int i = 0; i < bricks.size(); ++i)
+	for (int i = 0; i < m_bricks.size(); ++i)
 	{
-		if (bricks.at(i).GetBrickStrength()  == 1)
-		{
-			TextureManager::Instance()->DrawTexture("YellowBrick",
-				{ bricks.at(i).GetBrickX(), bricks.at(i).GetBrickY(),
-				bricks.at(i).GetBrickWidth(), bricks.at(i).GetBrickHeight() }, renderer);
-		}
-		else if (bricks.at(i).GetBrickStrength() == 2)
-		{
-			TextureManager::Instance()->DrawTexture("GreyBrick",
-				{ bricks.at(i).GetBrickX(), bricks.at(i).GetBrickY(),
-				bricks.at(i).GetBrickWidth(), bricks.at(i).GetBrickHeight() }, renderer);
-		}
+		m_bricks.at(i).DrawBrick(m_renderer);
 	}
 }
-
-void Game::DrawBall()
-{
-	TextureManager::Instance()->DrawTexture("Ball",
-		{ball.GetBallX(), ball.GetBallY(), ball.GetBallWidth(), ball.GetBallHeight()},
-		renderer);
-}
-
-void Game::DrawBallHolder()
-{
-	TextureManager::Instance()->DrawTexture("Desc",
-		{holder.GetBallHolderX(), holder.GetBallHolderY(),
-		holder.GetBallHolderWidth(), holder.GetBallHolderHeight()},
-		renderer);
-}
-
 
 void Game::LoadAndPlaySound()
 {
@@ -253,73 +228,64 @@ void Game::LoadAndPlaySound()
 		"backgroudMusic", 1);
 	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/gameOver.wav",
 		"gameOver", 0);
-	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/ballHitDesc.wav",
+	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/hitDesc.wav",
 		"ballHitDesc", 0);
 	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/start.wav",
 		"start", 0);
-	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/hit.wav",
+	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/hitBrick.wav",
 		"hitBrick", 0);
 	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/win.wav",
 		"win", 0);
 	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/push.wav",
 		"pushBall", 0);
+	SoundManager::Instance()->LoadMusicAndSound("./assets/sound/missingBall.wav",
+		"missingBall", 0);
 }
 
 void Game::LoadTextures()
 {
-	SDL_SetRenderDrawColor(renderer, 230, 230, 230, 0);
+	SDL_SetRenderDrawColor(m_renderer, 230, 230, 230, 0);
 
 	TextureManager::Instance()->LoadTexture("./assets/grey_Brick.png",
 		"GreyBrick",
-		renderer);
+		m_renderer);
 
 	TextureManager::Instance()->LoadTexture("./assets/yellow_Brick.png",
 		"YellowBrick",
-		renderer);
+		m_renderer);
 
 	TextureManager::Instance()->LoadTexture("./assets/ball.png",
 		"Ball",
-		renderer);
+		m_renderer);
 
 	TextureManager::Instance()->LoadTexture("./assets/desc.png",
 		"Desc",
-		renderer);
+		m_renderer);
 
 	TextureManager::Instance()->LoadTexture("./assets/heart.png",
 		"lives",
-		renderer);
+		m_renderer);
 
 	TextureManager::Instance()->LoadTexture("./assets/gameOver.png",
 		"gameOver",
-		renderer);
+		m_renderer);
 
 	TextureManager::Instance()->LoadTexture("./assets/start.png",
 		"Start",
-		renderer);
+		m_renderer);
 
 	TextureManager::Instance()->LoadTexture("./assets/winner.png",
 		"winner",
-		renderer);
+		m_renderer);
 
-	TextureManager::Instance()->LoadTexture("./assets/bg/3.png",
-		"background1",
-		renderer);
-
-	TextureManager::Instance()->LoadTexture("./assets/bg/3.png",
-		"background2",
-		renderer);
-
-	TextureManager::Instance()->LoadTexture("./assets/bg/3.png",
-		"background3",
-		renderer);
-
-	int id = rand() % 3;
-	backgroundName = "background" + std::to_string(id + 1);
+	TextureManager::Instance()->LoadTexture("./assets/background.png",
+		"background",
+		m_renderer);
 }
 
 void Game::InitMap()
 {
-	mapCord =
+	m_mapCord =
 	{
 	{0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
 	{0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -347,30 +313,30 @@ void Game::InitMap()
 
 	int windowWidth = 0;
 	int windowHeight = 0;
-	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+	SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
 
-	int mapColumCount = mapCord.size();
-	int mapRowCount = mapCord[0].size();
+	int mapColumCount = m_mapCord.size();
+	int mapRowCount = m_mapCord[0].size();
 
 	int brickWidth = windowWidth / mapColumCount;
 	int brickHeight = windowHeight / mapRowCount;
 
-	bricks.clear();
+	m_bricks.clear();
 
-	for (int i = 0; i < mapCord.size(); ++i) //colums
+	for (int i = 0; i < m_mapCord.size(); ++i) //colums
 	{
-		for (int j = 0; j < mapCord[i].size(); ++j) // rows
+		for (int j = 0; j < m_mapCord[i].size(); ++j) // rows
 		{
 			int xPos = i * brickWidth;
 			int yPos = j * brickHeight;
-			int newValue = mapCord[i][j];
+			int newValue = m_mapCord[i][j];
 
 			Brick tempBrick;
 			tempBrick.SetBrickStrength(newValue);
 			tempBrick.SetBrickWidth(brickWidth);
 			tempBrick.SetBrickHeight(brickHeight);
 			tempBrick.SetPosition(xPos, yPos);
-			bricks.push_back(tempBrick);
+			m_bricks.push_back(tempBrick);
 		}
 	}
 }
@@ -379,66 +345,67 @@ void Game::InitBall()
 {
 	int windowWidth = 0;
 	int windowHeight = 0;
-	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+	SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
 
-	int ballX = (windowWidth / 2) - (ball.GetBallWidth() / 2);
-	int ballY = windowHeight - ball.GetBallHeight() - holder.GetBallHolderHeight();
+	int ballX = (windowWidth / 2) - (m_ball.GetBallWidth() / 2);
+	int ballY = windowHeight - m_ball.GetBallHeight() - m_holder.GetBallHolderHeight();
 
-	ball.SetPosition(ballX, ballY);
+	m_ball.SetPosition(ballX, ballY);
 }
 
 void Game::InitHolder()
 {
 	int windowWidth = 0;
 	int windowHeight = 0;
-	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+	SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
 
-	int ballHolderX = (windowWidth / 2) - (holder.GetBallHolderWidth() / 2);
-	int ballHolderY = windowHeight - holder.GetBallHolderHeight();
+	int ballHolderX = (windowWidth / 2) - (m_holder.GetBallHolderWidth() / 2);
+	int ballHolderY = windowHeight - m_holder.GetBallHolderHeight();
 
-	holder.SetPosition(ballHolderX, ballHolderY);
+	m_holder.SetPosition(ballHolderX, ballHolderY);
 }
 
 void Game::SolveWallCollision()
 {
 	int windowWidth = 0;
 	int windowHeight = 0;
-	SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+	SDL_GetWindowSize(m_window, &windowWidth, &windowHeight);
 
 	// solve right collision
-	if (ball.GetBallX() > windowWidth - ball.GetBallWidth())
+	if (m_ball.GetBallX() > windowWidth - m_ball.GetBallWidth())
 	{
-		ball.SetIsBallMovingLeft(true);
-		ball.SetIsBallMovingRight(false);
+		m_ball.SetIsBallMovingLeft(true);
+		m_ball.SetIsBallMovingRight(false);
 	}
 	// solve left collision
-	else if (ball.GetBallX() <= 0)
+	else if (m_ball.GetBallX() <= 0)
 	{
-		ball.SetIsBallMovingLeft(false);
-		ball.SetIsBallMovingRight(true);
+		m_ball.SetIsBallMovingLeft(false);
+		m_ball.SetIsBallMovingRight(true);
 	}
 
 	// solve top collision
-	if (ball.GetBallY() <= 0)
+	if (m_ball.GetBallY() <= 0)
 	{
-		ball.SetIsBallMovingDown(true);
-		ball.SetIsBallMovingUp(false);
+		m_ball.SetIsBallMovingDown(true);
+		m_ball.SetIsBallMovingUp(false);
 	}
 	// solve bottom collision
-	if (ball.GetBallY() + ball.GetBallHeight() > windowHeight - holder.GetBallHolderHeight())
+	if (m_ball.GetBallY() + m_ball.GetBallHeight() > windowHeight - m_holder.GetBallHolderHeight())
 	{
-		int holderBegin = holder.GetBallHolderX();
-		int holderEnd = holder.GetBallHolderX() + holder.GetBallHolderWidth();
-		if (ball.GetBallX() + ball.GetBallWidth() > holderBegin && ball.GetBallX() < holderEnd)
+		int holderBegin = m_holder.GetBallHolderX();
+		int holderEnd = m_holder.GetBallHolderX() + m_holder.GetBallHolderWidth();
+		if (m_ball.GetBallX() + m_ball.GetBallWidth() > holderBegin && m_ball.GetBallX() < holderEnd)
 		{
-			ball.SetIsBallMovingDown(false);
-			ball.SetIsBallMovingUp(true);
+			m_ball.SetIsBallMovingDown(false);
+			m_ball.SetIsBallMovingUp(true);
 			SoundManager::Instance()->PlaySound("ballHitDesc", 0, 0);
 		}
 		else
 		{
-			player.DecreaseLives(1);
-			if (player.GetLives() > 0) // have lives
+			m_player.DecreaseLives(1);
+			SoundManager::Instance()->PlaySound("missingBall", 0, 0);
+			if (m_player.GetLives() > 0) // have lives
 			{
 				ResetGame();
 			}
@@ -452,7 +419,7 @@ void Game::SolveWallCollision()
 
 void Game::ResetGame()
 {
-	ball.SetIsBallMoving(false);
+	m_ball.SetIsBallMoving(false);
 
 	InitBall();
 	InitHolder();
@@ -460,8 +427,8 @@ void Game::ResetGame()
 
 void Game::GameOver()
 {
-	ball.SetIsBallMoving(false);
-	player.SetIsGameOver(true);
+	m_ball.SetIsBallMoving(false);
+	m_player.SetIsGameOver(true);
 	InitMap();
 	InitBall();
 	InitHolder();
@@ -471,12 +438,12 @@ void Game::GameOver()
 
 void Game::Win()
 {
-	ball.SetIsBallMoving(false);
-	player.SetIsGameWin(true);
+	m_ball.SetIsBallMoving(false);
+	m_player.SetIsGameWin(true);
 	InitMap();
 	InitBall();
 	InitHolder();
-	player.ResetPlayerData();
+	m_player.ResetPlayerData();
 	
 	SoundManager::Instance()->PlaySound("win", 0, 0);
 }
@@ -485,15 +452,15 @@ void Game::Win()
 
 void Game::SolveBrickCollision()
 {
-	for (int i = 0; i < bricks.size(); ++i)
+	for (int i = 0; i < m_bricks.size(); ++i)
 	{
-		if (bricks.at(i).GetBrickStrength() > 0)
+		if (m_bricks.at(i).GetBrickStrength() > 0)
 		{
-			int ballLeft = ball.GetBallX();
-			int ballRight = ball.GetBallX() + ball.GetBallWidth();
+			int ballLeft = m_ball.GetBallX();
+			int ballRight = m_ball.GetBallX() + m_ball.GetBallWidth();
 
-			int brickLeft = bricks.at(i).GetBrickX();
-			int brickRight = bricks.at(i).GetBrickX() + bricks.at(i).GetBrickWidth();
+			int brickLeft = m_bricks.at(i).GetBrickX();
+			int brickRight = m_bricks.at(i).GetBrickX() + m_bricks.at(i).GetBrickWidth();
 
 			bool isOutsideFromLeft = (ballRight < brickLeft);
 			if (isOutsideFromLeft)
@@ -506,11 +473,11 @@ void Game::SolveBrickCollision()
 				continue;
 			}
 
-			int ballTop = ball.GetBallY();
-			int ballBottom = ball.GetBallY() + ball.GetBallHeight();
+			int ballTop = m_ball.GetBallY();
+			int ballBottom = m_ball.GetBallY() + m_ball.GetBallHeight();
 
-			int brickTop = bricks.at(i).GetBrickY();
-			int brickBottom = bricks.at(i).GetBrickY() + bricks.at(i).GetBrickHeight();
+			int brickTop = m_bricks.at(i).GetBrickY();
+			int brickBottom = m_bricks.at(i).GetBrickY() + m_bricks.at(i).GetBrickHeight();
 
 			bool isOutsideFromTop = (ballBottom < brickTop);
 			if (isOutsideFromTop)
@@ -523,31 +490,27 @@ void Game::SolveBrickCollision()
 			{
 				continue;
 			}
+
 			//collision happen;
-			bricks.at(i).DecreaseStrength(1);
+			m_bricks.at(i).DecreaseStrength(1);
+			m_player.IncreasePoints(1);
 
-			if (bricks.at(i).GetBrickStrength() == 0)
-			{
-				SDL_DestroyTexture(NULL);
-			}
-			
-			player.IncreasePoints(1);
-
-			if (player.GetPoints() == 120)
+			if (m_player.GetPoints() == 120)
 			{
 				Win();
 			}
+
 			SoundManager::Instance()->PlaySound("hitBrick", 0, 0);
 			
-			if (ball.GetIsBallMovingUp())
+			if (m_ball.GetIsBallMovingUp())
 			{
-				ball.SetIsBallMovingDown(true);
-				ball.SetIsBallMovingUp(false);
+				m_ball.SetIsBallMovingDown(true);
+				m_ball.SetIsBallMovingUp(false);
 			}
-			else if (ball.GetIsBallMovingDown())
+			else if (m_ball.GetIsBallMovingDown())
 			{
-				ball.SetIsBallMovingDown(false);
-				ball.SetIsBallMovingUp(true);
+				m_ball.SetIsBallMovingDown(false);
+				m_ball.SetIsBallMovingUp(true);
 			}
 			break;
 		}
@@ -556,13 +519,13 @@ void Game::SolveBrickCollision()
 
 Game::Game()
 {
-	Game::window = NULL;
-	Game::renderer = NULL;
-	Game::running = true;
+	Game::m_window = NULL;
+	Game::m_renderer = NULL;
+	Game::m_running = true;
 }
 
 Game::~Game()
 {
-	delete window;
-	delete renderer;
+	delete m_window;
+	delete m_renderer;
 }

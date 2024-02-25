@@ -24,19 +24,18 @@ bool Player::InitPoints(SDL_Renderer* ren)
 		return false;
 	}
 
-	font1 = TTF_OpenFont("./assets/fonts/Arcade.ttf", 40);
+	m_font = TTF_OpenFont("./assets/fonts/Arcade.ttf", 40);
 
 	SDL_Surface* tempSurfaceText = NULL;
-	tempSurfaceText = TTF_RenderText_Blended(font1, "Points: ", { 0,0,0,255 });
-	textTexture = SDL_CreateTextureFromSurface(ren, tempSurfaceText);
+	tempSurfaceText = TTF_RenderText_Blended(m_font, "Points: ", { 0,0,0,255 });
+	m_textTexture = SDL_CreateTextureFromSurface(ren, tempSurfaceText);
 
 	int tw, th;
-	SDL_QueryTexture(pointsTextTexture, 0, 0, &tw, &th);
-	SDL_QueryTexture(textTexture, 0, 0, &tw, &th);
+	SDL_QueryTexture(m_pointsTextTexture, 0, 0, &tw, &th);
+	SDL_QueryTexture(m_textTexture, 0, 0, &tw, &th);
 
-	dRectText = { 10,15,tw,th };
-	dRectText2 = { 130,12,35,45 };
-	dRectText3 = { 320,220,600,400 };
+	m_textDestRect = { 10,15,tw,th };
+	m_pointsDestRect = { 130,12,35,45 };
 
 	SDL_FreeSurface(tempSurfaceText);
 	m_points = 0;
@@ -46,17 +45,17 @@ bool Player::InitPoints(SDL_Renderer* ren)
 
 void Player::RenderScore(SDL_Renderer* ren)
 {
-	if (!font1)
+	if (!m_font)
 		return;
 
 	SDL_Surface* tempSurfaceText = NULL;
 	int tw, th;
-	SDL_QueryTexture(pointsTextTexture, 0, 0, &tw, &th);
-	tempSurfaceText = TTF_RenderText_Blended(font1, std::to_string(m_points).data(), {0,0,0,255});
-	pointsTextTexture = SDL_CreateTextureFromSurface(ren, tempSurfaceText);
+	SDL_QueryTexture(m_pointsTextTexture, 0, 0, &tw, &th);
+	tempSurfaceText = TTF_RenderText_Blended(m_font, std::to_string(m_points).data(), {0,0,0,255});
+	m_pointsTextTexture = SDL_CreateTextureFromSurface(ren, tempSurfaceText);
 
-	SDL_RenderCopy(ren, textTexture, NULL, &dRectText);
-	SDL_RenderCopy(ren, pointsTextTexture, NULL, &dRectText2);
+	SDL_RenderCopy(ren, m_textTexture, NULL, &m_textDestRect);
+	SDL_RenderCopy(ren, m_pointsTextTexture, NULL, &m_pointsDestRect);
 
 	SDL_FreeSurface(tempSurfaceText);
 }
@@ -91,7 +90,6 @@ void Player::GameOver(SDL_Renderer* ren)
 {
 	if (m_lives == 0)
 	{
-		SDL_RenderCopy(ren, gameOverText, NULL, &dRectText3);
 		TextureManager::Instance()->DrawTexture("gameOver",
 			{ 0, 0, 1280, 720 }, ren);
 	}
@@ -99,9 +97,8 @@ void Player::GameOver(SDL_Renderer* ren)
 
 void Player::StartGame(SDL_Renderer* ren)
 {
-	if (isGameAtStartingPosition)
+	if (m_isGameAtStartingPosition)
 	{
-		SDL_RenderCopy(ren, gameOverText, NULL, &dRectText3);
 			TextureManager::Instance()->DrawTexture("Start",
 				{ 0, 0, 1280, 720 }, ren);
 	}
@@ -109,9 +106,8 @@ void Player::StartGame(SDL_Renderer* ren)
 
 void Player::WinGame(SDL_Renderer* ren)
 {
-	if (isGameWin)
+	if (m_isGameWin)
 	{
-		SDL_RenderCopy(ren, gameOverText, NULL, &dRectText3);
 		TextureManager::Instance()->DrawTexture("winner",
 			{ 0, 0, 1280, 720 }, ren);
 	}
@@ -119,40 +115,38 @@ void Player::WinGame(SDL_Renderer* ren)
 
 void Player::SetIsGameAtStartingPosition(bool isGameAtStartingPosition)
 {
-	this->isGameAtStartingPosition = isGameAtStartingPosition;
+	this->m_isGameAtStartingPosition = isGameAtStartingPosition;
 }
 
 bool Player::GetIsGameAtStartingPosition()
 {
-	return isGameAtStartingPosition;
+	return m_isGameAtStartingPosition;
 }
 
 void Player::SetIsGameOver(bool isGameOver)
 {
-	this->isGameOver = isGameOver;
+	this->m_isGameOver = isGameOver;
 }
 
 bool Player::GetIsGameOver()
 {
-	return isGameOver;
+	return m_isGameOver;
 }
 
 void Player::SetIsGameWin(bool isGameWin)
 {
-	this->isGameWin = isGameWin;
+	this->m_isGameWin = isGameWin;
 }
 
 bool Player::GetIsGameWin()
 {
-	return isGameWin;
+	return m_isGameWin;
 }
 
 Player::Player()
-{
-	dRectText = 0;
-}
+{}
 
 Player::~Player()
 {
-	TTF_CloseFont(font1);
+	TTF_CloseFont(m_font);
 }
